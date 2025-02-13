@@ -1,22 +1,14 @@
 from fastapi import FastAPI, HTTPException
-from contextlib import asynccontextmanager
 
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import create_tables, delete_tables, get_db
+from app.database import get_db
 from app.schemas import Operation
 from app import crud
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await create_tables()
-    print("База готова")
-    yield
-    # await delete_tables()
-    # print("База очищена")
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 
 

@@ -11,6 +11,24 @@ services:
       volumes:
         - postgres_data:/data/postgres_db
 
+  liquibase:
+    image: liquibase/liquibase
+    depends_on:
+      - postgres_db
+    volumes:
+      - ../app/migrations:/liquibase/changelog
+    command: --defaults-file=/liquibase/changelog/liquibase.properties update
+
+  app:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres_db
+    environment:
+      - DATABASE_URL=postgresql://root:MyPassword@postgres_db:5432/mydb
 
 volumes:
   postgres_data:
