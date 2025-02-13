@@ -29,9 +29,10 @@ async def say_balance(WALLET_UUID: str, db: AsyncSession = Depends(get_db)):
 async def say_operation(WALLET_UUID: str, operations: Operation, db: AsyncSession = Depends(get_db)):
     try:
         await crud.wallet_operation(db, WALLET_UUID, operations)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    return {"message": f"Operation {operations.operationType.value}, amount: {operations.amount}"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    else:
+        return {"message": f"Operation {operations.operationType.value}, amount: {operations.amount}"}
 
 @app.post("/api/v1/new_wallet")
 async def create_wallet(db: AsyncSession = Depends(get_db)):

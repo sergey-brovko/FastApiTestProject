@@ -15,10 +15,12 @@ async def wallet_operation(db: AsyncSession, uuid: str, operation: Operation):
         else:
             new_balance = wallet.balance - operation.amount
         if new_balance > 0:
-            await db.execute(update(Wallet).values(balance=new_balance))
+            await db.execute(update(Wallet).where(Wallet.id == uuid).values(balance=new_balance))
             await db.commit()
         else:
-            raise Exception("Insufficient funds on balance")
+            raise ValueError("Insufficient funds on balance")
+    else:
+        raise ValueError("Wallet not found")
 
 async def create_wallet(db: AsyncSession):
     new_wallet = Wallet()
