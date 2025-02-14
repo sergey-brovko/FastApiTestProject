@@ -62,7 +62,7 @@ async def say_operation(WALLET_UUID: str, operation: Operation, db: AsyncSession
         else:
             raise HTTPException(status_code=404, detail="Wallet not found")
     new_balance = balance + operation.amount if operation.operationType == "DEPOSIT" else balance - operation.amount
-    if new_balance > 0.0:
+    if new_balance >= 0.0:
         try:
             await redis.setex(WALLET_UUID, 60, f"{new_balance}")
             await crud.wallet_operation(new_balance, db, WALLET_UUID, operation)
