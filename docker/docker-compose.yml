@@ -19,6 +19,13 @@ services:
       - ../app/migrations:/liquibase/changelog
     command: --defaults-file=/liquibase/changelog/liquibase.properties update
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
   app:
     build:
       context: ../
@@ -27,9 +34,12 @@ services:
       - "8000:8000"
     depends_on:
       - postgres_db
+      - redis
     environment:
       - DATABASE_URL=postgresql+asyncpg://root:MyPassword@postgres_db/mydb
+      - REDIS_HOST=redis
 
 volumes:
   postgres_data:
     driver: local
+  redis_data:
